@@ -64,7 +64,7 @@ function updateStocksInfo(){
         range.getCell(x + 1, columnIndexAmount).setValue(dividendInfo.latestAmount);
         
         var currency = row[columnIndexCurrency - 1];
-        var rate = getRate(dividendInfo.paidDate, currency);
+        var rate = getRate(currency);
         range.getCell(x + 1, columnIndexCurrencyRate).setValue(rate);
         
         if (dividendInfo.paidDate <= today){
@@ -356,9 +356,10 @@ function getResultsData(investingId) {
       var url = Utilities.formatString('https://es.investing.com/equities/%s', investingId);
       var html = UrlFetchApp.fetch(url, {muteHttpExceptions: true}).getContentText();
       
-      var href = Utilities.formatString("<a href='/equities/%s-earnings'>", investingId);
-      var date = getDateBySeparator(html, href, 1, ".");
+      var href = Utilities.formatString("<a class=\"inv-link\" data-test=\"link-key-info\" href=\"/equities/%s-earnings\">", investingId);
+      var date = getDateBySeparator(html, href, 1, " ");
       
+      date.setDate(date.getDate()+1);
       return date; 
     }
     else {
@@ -371,37 +372,61 @@ function getResultsData(investingId) {
   }
 }
 
-function getRate(date, quote){
+function getRate(quote){
   if(!quote || quote == "" || quote == "EUR")
     return 1.0;
   
-  var dateFormatted = Utilities.formatDate(date, Session.getScriptTimeZone(), "yyyy-MM-dd");
-  var rateString = '';
   var today = getTodayDate();
-  
-  if (date < today) {
-    var url = 'https://api.exchangeratesapi.io/history?start_at=' + dateFormatted + '&end_at=' + dateFormatted + '&symbols=' + quote;
-    var plain = UrlFetchApp.fetch(url);
-    var json = JSON.parse(plain);
+  var yearMonth = Utilities.formatDate(today, Session.getScriptTimeZone(), "yyyy-MM");
     
-    if (json.rates[dateFormatted] == undefined){
-      date.setDate(date.getDate() - 1);
-      return getRate(date, quote);
-    }
-    else {
-      rateString = json.rates[dateFormatted][quote];      
-    }    
-  }
-  else {
-    var url = 'https://api.exchangeratesapi.io/latest?symbols=' + quote;
+  var documentProperties = PropertiesService.getUserProperties();
+  var keys = documentProperties.getKeys();
+  var key = 'rateProperty' + yearMonth + quote;
+  if(keys.includes(key))
+    return parseFloat(documentProperties.getProperty(key));
+
+  var rateString = '';  
+  try{
+    var dateFormatted = Utilities.formatDate(today, Session.getScriptTimeZone(), "yyyy-MM-dd");
+
+    const url = 'https://free.currconv.com/api/v7/convert?apiKey=' + getAccessKey() + '&date=' + dateFormatted + '&q=EUR_' + quote + '&compact=ultra';
     var plain = UrlFetchApp.fetch(url);
     var json = JSON.parse(plain);
-    rateString = json.rates[quote];
+
+    if(json.hasOwnProperty('EUR_' + quote) && json['EUR_' + quote].hasOwnProperty(dateFormatted))
+      rateString = json['EUR_' + quote][dateFormatted];
+    else
+      return getDefaultRate(quote);
+  }
+  catch (e) {
+    return getDefaultRate(quote);
   }
   
-  var rate = parseFloat(rateString);
-  
+  var rate = parseFloat(rateString);  
+  documentProperties.setProperty(key, rateString);
+
   return rate;
+}
+
+function getDefaultRate(quote){
+  var documentProperties = PropertiesService.getUserProperties();
+  var key = 'ratePropertyLatest' + quote;
+  var keys = documentProperties.getKeys();
+  if(keys.includes(key))
+    return parseFloat(documentProperties.getProperty(key));
+
+  switch (quote) {
+    case "USD":
+      return 1.21;
+    case "CAD":
+      return 1.49;
+    default:
+      return 1;
+  }
+}
+
+function getAccessKey(){
+  return "fc637f9ced77d2a415b9";
 }
 
 function testDividend(){  
@@ -442,7 +467,7 @@ function getSendTodayNotifications() {
 }
 
 function getFooter(){
- return "\n\n" + "www.manuelballesteros.eu"; 
+ return "\n\n" + "www.herramientasdeinversor.com"; 
 }
 
 function setDividendHistory(){
