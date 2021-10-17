@@ -57,7 +57,7 @@ function getHolidays() {
       
       if(countries.includes(country)) {
         var dateFormatted = Utilities.formatDate(date, Session.getScriptTimeZone(), "dd/MM/yyyy");
-        var message = market + ' (' + country  + ') ' + 'no abrirá el día ' + dateFormatted + '\n\n' + holiday + "\n\nwww.manuelballesteros.eu";
+        var message = market + ' (' + country  + ') ' + 'no abrirá el día ' + dateFormatted + '\n\n' + holiday + "\n\nwww.herramientasdeinversor.com";
         
         // Create calendar
         if(calendar != null && getIsActiveHolidaysDate()){
@@ -79,7 +79,7 @@ function getHolidays() {
     }
   }
   
-  PropertiesService.getDocumentProperties().setProperty('LastHolidayTime', new Date());
+  PropertiesService.getUserProperties().setProperty('LastHolidayTime', new Date());
 }
 
 function waitForLoading(dataRange, sheet, maxWaitTimeInSec)
@@ -99,7 +99,7 @@ function waitForLoading(dataRange, sheet, maxWaitTimeInSec)
 }
 
 function getSendTodayHolidays() {
-  var documentProperties = PropertiesService.getDocumentProperties();
+  var documentProperties = PropertiesService.getUserProperties();
   var keys = documentProperties.getKeys();  
   var lastNotificationProperty = undefined;
   if(keys.includes('LastHolidayTime'))
