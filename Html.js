@@ -43,7 +43,49 @@ function getDateBySeparator(html, tag, index, separator) {
       return false;
     
     var dd = parseFloat(splittedDate[0]);
-    var mm = parseFloat(splittedDate[1]) - 1;
+
+    var mm = -1;
+    switch (splittedDate[1].replace('.', '').trim()) {
+      case 'ene':
+        mm = 0;
+        break;
+      case 'feb':
+        mm = 1;
+        break;
+      case 'mar':
+        mm = 2;
+        break;
+      case 'abr':
+        mm = 3;
+        break;
+      case 'may':
+        mm = 4;
+        break;
+      case 'jun':
+        mm = 5;
+        break;
+      case 'jul':
+        mm = 6;
+        break;
+      case 'ago':
+        mm = 7;
+        break;
+      case 'sep':
+        mm = 8;
+        break;
+      case 'oct':
+        mm = 9;
+        break;
+      case 'nov':
+        mm = 10;
+        break;
+      case 'dic':
+        mm = 11;
+        break;
+      default:
+        mm = parseFloat(splittedDate[1]) - 1;
+    }
+
     
     var year = splittedDate[2];
     if (year.length == 2){
