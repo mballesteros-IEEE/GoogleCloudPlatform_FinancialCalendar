@@ -8,7 +8,7 @@ function addMenu()
       .addItem('Actualizar', 'createTriggersAndUpdateCalendar')
       .addItem('Borrar histórico de dividendos', 'deleteDividendHistory')
       .addSeparator()
-//      .addItem('¿Un café 😄?', 'donate')
+//      .addItem('¿Un café para Manuel?', 'donate')
       .addToUi();
 }
 
@@ -37,40 +37,38 @@ function deleteAllTriggers() {
  }
 }
 
-function createSpreadsheetCronTrigger() {
-  // Trigger every day.
-//  ScriptApp.newTrigger('updateStocksInfoAndCreateEventsAndSendMails')
-//      .timeBased()
-//      .everyHours(8)
-//      //.everyMinutes(5)
-//      .create();
-  
+function createSpreadsheetCronTrigger() {  
   // Trigger every day.
   ScriptApp.newTrigger('updateStocksInfoAndCreateEventsAndSendMails')
       .timeBased()
-      .atHour(4)
+      .atHour(8)
       .everyDays(1)
       .create();
   
   // Trigger every day.
   ScriptApp.newTrigger('updateStocksInfoAndCreateEventsAndSendMails')
       .timeBased()
-      .atHour(16)
+      .atHour(20)
       .everyDays(1)
       .create();
   
   // Trigger every day.
   ScriptApp.newTrigger('getHolidays')
       .timeBased()
-      .atHour(5)
+      .atHour(8)
       .everyDays(1)
       .create();
   
   var ss = SpreadsheetApp.getActive();
-  ScriptApp.newTrigger('checkDonations')
+  ScriptApp.newTrigger('openDialogs')
       .forSpreadsheet(ss)
       .onOpen()
       .create();
+}
+
+function openDialogs(){  
+  checkDonations();
+  //checkSubscription();
 }
 
 function createTriggersAndUpdateCalendar(){
@@ -142,6 +140,9 @@ function getColumnCountry() {
   return getConfigurationParameter(14);
 }
 
+
+
+
 function getCalendarExDividends() {
   return getConfigurationParameter(16).trim();
 }
@@ -158,6 +159,8 @@ function getCalendarIdHolidays() {
   return getConfigurationParameter(19).trim();
 }
 
+
+
 function getEmail() {
   return getConfigurationParameter(20).trim();;
 }
@@ -169,6 +172,8 @@ function getIsActiveNotificationChange() {
 function getIsActiveNotificationToday() {
   return getConfigurationParameter(22);
 }
+
+
 
 
 function getIsActivePaidDate() {
