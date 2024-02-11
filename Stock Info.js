@@ -355,7 +355,7 @@ function getResultsData(investingId) {
     if(investingId && investingId != ""){
       var url = Utilities.formatString('https://es.investing.com/equities/%s', investingId);
       var html = UrlFetchApp.fetch(url, {muteHttpExceptions: true}).getContentText();
-      var href = Utilities.formatString("<a class=\"inv-link\" data-test=\"link-key-info\" href=\"/equities/%s-earnings\" target=\"_blank\">", investingId);
+      var href = Utilities.formatString("<a class=\"text-secondary hover:underline focus:underline hover:text-secondary focus:text-secondary\" data-test=\"link-key-info\" href=\"/equities/%s-earnings\" target=\"_blank\">", investingId);
       var date = getDateBySeparator(html, href, 1, " ");
       
       date.setDate(date.getDate()+1);
